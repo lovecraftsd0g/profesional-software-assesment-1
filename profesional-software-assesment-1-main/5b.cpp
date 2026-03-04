@@ -16,22 +16,59 @@ int main(){
 	/*day 5 part 1*/
 	
 	ifstream file5("day5_real.txt");
-	string line5;
-	unordered_map<int8_t, unordered_set<int8_t>> p;
-	while (getline(file5, line5) && (line5 != ""))
-		p[stoi(line5.substr(0, 2))].insert(stoi(line5.substr(3, 2)));
-	int part1(0), part2(0);
-	while (getline(file5, line5)) {
-		vector<int8_t> ordered;
-		for (int i = 0; i < line5.length(); i += 3) ordered.push_back(stoi(line5.substr(i, 2)));
-		auto unOrdered(ordered);
-		sort(ordered.begin(), ordered.end(),
-			[&p](int8_t l, int8_t r) { return p[l].find(r) != p[l].end(); });
-		if (unOrdered == ordered)
-			part1 += ordered[ordered.size() / 2];
-		else
-			part2 += ordered[ordered.size() / 2];
+	regex pattern(R"((\d{2})\|(\d{2}))");
+	string Day5String;
+	unordered_map<int, unordered_set<int>> pairs;
+	string line;
+
+	int total = 0;
+
+	sregex_iterator begin(Day5String.begin(), Day5String.end(), pattern);
+	sregex_iterator end;
+
+	/*this section searches for pairsand patterns*/
+	while (getline(file5, line) && !line.empty()) {
+		smatch match;
+		if (regex_search(line, match, pattern)) {
+			pairs[stoi(match[1])].insert(stoi(match[2]));
+		}
 	}
-	
-	cout << "Part 2" << part2 << endl;
+
+
+    /*this section checks the pages and adds the middle page to the total if its valid*/
+    while (getline(file5, line)) {
+
+       if(line.empty()){
+			continue;
+	   }
+
+	   vector<int> pages;
+	   stringstream ss(line);
+	   string number;
+	   bool valid = true;
+
+	   /*appendall pages from the line*/
+	   while(getline(ss, number, ',')) {
+		   pages.push_back(stoi(number));
+	   }
+	   if (pages.empty()){
+		   continue;
+	   }
+	   for (int i = 0; i < pages.size() && valid; i++) {
+		   for (int j = i + 1; j < pages.size(); j++) {
+			   int later = pages[j];
+			   int earlier = pages[i];
+			   if (pairs[later].count(earlier)) {
+				   valid = false;
+				   break;
+			   }
+		   }
+	   }
+	   if(!valid){
+		   total += pages[pages.size() / 2];
+	   }
+    }
+
+	cout << "Day 5 Part 2" << endl;
+	cout << total << endl;
 }

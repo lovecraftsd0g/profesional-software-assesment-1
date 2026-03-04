@@ -1,17 +1,12 @@
 #include <iostream>
 #include <fstream>
-#include <chrono>
 #include <regex>
-#include <cassert>
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <unordered_map>
-#include <unordered_set>
-#include <cmath>
 #include <sstream>
 
 using namespace std;
+
 int main(){
     const int day2 = 1000;
     ifstream file2("day2_real.txt");
